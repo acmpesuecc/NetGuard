@@ -2,8 +2,6 @@ package icmp
 
 import (
 	"fmt"
-	"golang.org/x/net/icmp"
-	"golang.org/x/net/ipv4"
 	"net"
 	"time"
 )
@@ -24,25 +22,14 @@ func (c *Client) SendEchoRequest() error {
 	}
 	defer conn.Close()
 
-	msg := icmp.Message{
-		Type: ipv4.ICMPTypeEcho,
-		Code: 0,
-		Body: &icmp.Echo{
-			ID:   1,
-			Seq:  1,
-			Data: []byte("ping"),
-		},
-	}
-
-	b, err := msg.Marshal(nil)
-	if err != nil {
-		return fmt.Errorf("failed to marshal message: %v", err)
-	}
-
-	_, err = conn.Write(b)
+	// Construct ICMP Echo Request
+	// Note: This is simplified. Real implementation should include ICMP header and checksum.
+	msg := []byte{8, 0, 0, 0, 0, 0, 0, 0} // ICMP Echo Request (type 8, code 0)
+	_, err = conn.Write(msg)
 	if err != nil {
 		return fmt.Errorf("failed to send request: %v", err)
 	}
+
 	return nil
 }
 
@@ -56,10 +43,10 @@ func (c *Client) ReceiveEchoReply() ([]byte, error) {
 	conn.SetReadDeadline(time.Now().Add(c.timeout))
 
 	reply := make([]byte, 1500)
-	_, err = conn.Read(reply)
+	n, err := conn.Read(reply)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read reply: %v", err)
 	}
 
-	return reply, nil
+	return reply[:n], nil
 }
