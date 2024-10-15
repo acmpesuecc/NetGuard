@@ -19,7 +19,7 @@ NetGuard isn't just a tool – it's your partner for network excellence! Here's 
 ## 📥 **Installation**
 Follow these quick steps to get NetGuard running in no time:
 ```bash
-git clone https://github.com/acmpesuecc/NetGuard
+git clone git@github.com:acmpesuecc/NetGuard.git
 cd NetGuard
 go build
 ```
